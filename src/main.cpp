@@ -40,30 +40,44 @@ void setup() {
   ws2812fx.setBrightness(255);
   ws2812fx.setSpeed(200);
   ws2812fx.setColor(0x00FF00);
-  ws2812fx.setMode(FX_MODE_LARSON_SCANNER);
+  ws2812fx.setMode(42);
   ws2812fx.start();
   Serial.begin(9600);
 }
 
 bool startShow = false;
+int effect = 53;
 
 void loop() {
-
-  if (getDistance() < 30){
-    Serial.println("Too Close for Covid");
-    now = millis();
-
-    ws2812fx.service();
-
-    if(now - last_change > TIMER_MS) {
-      ws2812fx.setMode(7);
-      last_change = now;
-    }
+  delay(2000);
+  int distance = getDistance();
+  if(distance<30){
+    startShow = true;
+    Serial.println("Distance (cm): ");
+    Serial.println(distance);
+    Serial.println("Infected by Covid");
   }
+
   else{
     Serial.println("Not too close yet!");
     delay(200);
   }
+
+  while(startShow){
+    now = millis();
+    ws2812fx.service();
+
+    if(effect == 53){
+      effect = 43;
+    }
+    else{
+      effect = 53;
+    }
+
+    if(now - last_change > TIMER_MS) {
+      ws2812fx.setMode(effect);
+      last_change = now;
+    }
+  }
   
 }
-
